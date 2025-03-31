@@ -25,7 +25,8 @@
 
 ```bash
 flutter pub get
-flutter run
+#flutter run
+#flutter에서 작동하지 않으므로 안드로이드 스튜디오에서 실행 필요요
 ```
 
 ## 필요한 권한
@@ -33,6 +34,3 @@ flutter run
 - 카메라
 - 저장소 접근 권한
 
-## 개발자
-
-Ant Camera 개발팀

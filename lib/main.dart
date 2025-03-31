@@ -34,9 +34,9 @@ class AntCameraScreen extends StatefulWidget {
 }
 
 class _AntCameraScreenState extends State<AntCameraScreen> {
-  final List<String> defaultTags = ['선택안함', '개인', '집', '직장', '학교'];
+  final List<String> defaultTags = ['my', 'home', 'company', 'school', 'etc'];
   List<String> tags = [];
-  String? selectedTag = "선택안함";
+  String? selectedTag = "etc";
   bool _isCustomPath = false;
   final TextEditingController _tagController = TextEditingController();
   
@@ -55,6 +55,7 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
     super.initState();
     _loadTags();
     _loadSavePath();
+    _loadSelectedTag();
     _checkAndRequestPermissions();
   }
 
@@ -82,7 +83,7 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
       if (!result && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('카메라와 저장소 권한이 필요합니다. 설정에서 권한을 허용해 주세요.'),
+            content: Text('Camera and storage permissions are required. Please allow permissions in settings.'),
             duration: Duration(seconds: 5),
           ),
         );
@@ -246,6 +247,23 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
     });
   }
 
+  // 선택된 태그 불러오기
+  Future<void> _loadSelectedTag() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedTag = prefs.getString('selectedTag');
+    if (savedTag != null) {
+      setState(() {
+        selectedTag = savedTag;
+      });
+    }
+  }
+
+  // 선택된 태그 저장
+  Future<void> _saveSelectedTag(String tag) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedTag', tag);
+  }
+
   @override
   void dispose() {
     _tagController.dispose();
@@ -258,22 +276,22 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('새 태그 추가'),
+          title: const Text('Add New Tag'),
           content: TextField(
             controller: _tagController,
-            decoration: const InputDecoration(hintText: '새 태그 이름 입력'),
+            decoration: const InputDecoration(hintText: 'Enter new tag name'),
             autofocus: true,
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('취소'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.pop(context);
                 _tagController.clear();
               },
             ),
             TextButton(
-              child: const Text('추가'),
+              child: const Text('Add'),
               onPressed: () {
                 if (_tagController.text.isNotEmpty) {
                   setState(() {
@@ -299,12 +317,12 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('설정'),
+              title: const Text('Settings'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('사진 저장 위치:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text('Photo Save Location:', style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -312,7 +330,7 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                         child: TextField(
                           controller: _pathController,
                           decoration: const InputDecoration(
-                            hintText: '저장 경로 입력',
+                            hintText: 'Enter save path',
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             isDense: true,
@@ -326,7 +344,7 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                     children: [
                       TextButton.icon(
                         icon: const Icon(Icons.refresh),
-                        label: const Text('기본값으로 복원'),
+                        label: const Text('Restore Default'),
                         onPressed: () async {
                           final defaultPath = await _getDefaultPhotoPath();
                           setDialogState(() {
@@ -341,12 +359,12 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                     children: [
                       TextButton.icon(
                         icon: const Icon(Icons.folder),
-                        label: const Text('폴더 분류 추가 및 관리'),
+                        label: const Text('Add and Manage Folder Categories'),
                         onPressed: () async {
-                          // 폴더 분류 추가 및 관리 기능은 유료 버전에서 사용할 수 있습니다. 메시지 표시
+                          // Folder category management is available in the paid version. Show message
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('폴더 분류 추가 및 관리 기능은 유료 버전에서 사용할 수 있습니다.'),
+                              content: Text('Folder category management is available in the paid version.'),
                             ),
                           );
                         },
@@ -357,32 +375,32 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('취소'),
+                  child: const Text('Cancel'),
                   onPressed: () {
                     Navigator.pop(context);
-                    _loadSavePath(); // 저장된 설정 다시 불러오기
+                    _loadSavePath(); // Reload saved settings
                   },
                 ),
                 TextButton(
-                  child: const Text('저장'),
+                  child: const Text('Save'),
                   onPressed: () async {
                     if (_pathController.text.isNotEmpty) {
                       final directory = Directory(_pathController.text);
-                      // 디렉토리가 없으면 생성
+                      // Create directory if it doesn't exist
                       if (!await directory.exists()) {
                         await directory.create(recursive: true);
                       }
                       
-                      // 저장 경로 업데이트
+                      // Update save path
                       await _saveSavePath(_pathController.text, true);
                       
-                      // 위치 정보 저장 설정 업데이트
+                      // Update location info save setting
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setBool('saveLocationInfo', _saveLocationInfo);
                       
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('설정이 변경되었습니다.')),
+                          const SnackBar(content: Text('Settings have been updated.')),
                         );
                         Navigator.pop(context);
                       }
@@ -525,17 +543,17 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                                 if (await savedFile.exists()) {
                                   print('파일이 존재합니다. 크기: ${await savedFile.length()} 바이트');
                                   //태그에 따른 저장 위치 메시지 생성
-                                  String saveLocationMsg = '사진이 [$selectedTag] 폴더에 저장되었습니다';
+                                  String saveLocationMsg = 'Photo saved in [$selectedTag] folder';
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(saveLocationMsg),
                                       duration: const Duration(seconds: 2),
                                       action: SnackBarAction(
-                                        label: '상세 보기',
+                                        label: 'View Details',
                                         onPressed: () async {
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                 SnackBar(
-                                                  content: Text('저장 경로: $directory'),
+                                                  content: Text('Save Path: $directory'),
                                                   duration: const Duration(seconds: 3),
                                                 ),
                                               );
@@ -558,12 +576,12 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                                   
                                   if (mounted) {
                                     // 태그에 따른 저장 위치 메시지 생성
-                                    String saveLocationMsg = '사진이 저장되었습니다';
+                                    String saveLocationMsg = 'Photo saved';
                                     
                                     if (selectedTag != null) {
-                                      saveLocationMsg = '사진이 [$selectedTag] 폴더에 저장되었습니다';
+                                      saveLocationMsg = 'Photo saved in [$selectedTag] folder';
                                     } else {
-                                      saveLocationMsg = '사진이 기본 폴더에 저장되었습니다';
+                                      saveLocationMsg = 'Photo saved in default folder';
                                     }
                                     
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -571,11 +589,11 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                                         content: Text(saveLocationMsg),
                                         duration: const Duration(seconds: 2),
                                         action: SnackBarAction(
-                                          label: '상세 보기',
+                                          label: 'View Details',
                                           onPressed: () {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
-                                                content: Text('저장 경로: ${file.path}'),
+                                                content: Text('Save Path: ${file.path}'),
                                                 duration: const Duration(seconds: 3),
                                               ),
                                             );
@@ -591,7 +609,7 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                         } catch (e) {
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('사진 저장 오류: $e')),
+                              SnackBar(content: Text('Error saving photo: $e')),
                             );
                           }
                         }
@@ -655,7 +673,7 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
               ),
               const SizedBox(height: 16),
               const Text(
-                '카메라와 저장소 권한이 필요합니다.',
+                'Camera and storage permissions are required.',
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
               const SizedBox(height: 24),
@@ -663,7 +681,7 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                 onPressed: () {
                   _checkAndRequestPermissions();
                 },
-                child: const Text('권한 요청'),
+                child: const Text('Request Permissions'),
               ),
             ],
           ),
@@ -676,15 +694,16 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
   Widget _buildTagButton(String? tag) {
     // 태그가 현재 선택된 태그와 일치하는지 확인
     final bool isSelected = tag == selectedTag;
-    final String displayText = tag ?? '선택안함';
+    final String displayText = tag ?? 'etc';
 
     return Container(
       margin: const EdgeInsets.only(right: 10), // 마진 줄임
       child: ElevatedButton(
         onPressed: () {
           setState(() {
-            selectedTag = tag ?? "선택안함"; // null을 "선택안함"으로 처리
+            selectedTag = tag ?? "etc"; // null을 "선택안함"으로 처리
           });
+          _saveSelectedTag(selectedTag!); // 선택된 태그 저장
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: isSelected ? Colors.blue : Colors.black.withOpacity(0.5),

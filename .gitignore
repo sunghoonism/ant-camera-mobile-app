@@ -1,5 +1,5 @@
-android/app/build/outputs/
-
+android/app/build/
+*.apk
 # Miscellaneous
 *.class
 *.log
