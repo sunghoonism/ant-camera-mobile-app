@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.ant_camera.app-mergeDebugResources-53:/values-sl/values-sl.xml",
+            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-53:/values-sl/values-sl.xml",
             "map": [
                 {
                     "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\7d9977a1c54ea44a3347b382d148518d\\transformed\\jetified-play-services-basement-18.1.0\\res\\values-sl\\values.xml",

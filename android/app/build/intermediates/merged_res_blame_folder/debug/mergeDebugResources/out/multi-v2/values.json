@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.ant_camera.app-mergeDebugResources-53:/values/values.xml",
+            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-53:/values/values.xml",
             "map": [
                 {
                     "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\2c7a28485314ee0e74d343b62dcecbb6\\transformed\\media-1.7.0\\res\\values\\values.xml",

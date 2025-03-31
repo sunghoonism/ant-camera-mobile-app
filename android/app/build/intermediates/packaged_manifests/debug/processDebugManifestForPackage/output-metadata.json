@@ -4,7 +4,7 @@
     "type": "PACKAGED_MANIFESTS",
     "kind": "Directory"
   },
-  "applicationId": "com.example.ant_camera",
+  "applicationId": "com.ant_revolution.ant_camera",
   "variantName": "debug",
   "elements": [
     {
