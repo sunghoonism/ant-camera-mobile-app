@@ -65,11 +65,24 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
     final androidInfo = Platform.isAndroid ? await DeviceInfoPlugin().androidInfo : null;
     final sdkInt = androidInfo?.version.sdkInt ?? 0;
     
-    final storageStatus = Platform.isAndroid && sdkInt >= 33
-        ? await Permission.photos.status
-        : await Permission.storage.status;
+    bool storageGranted = false;
+    
+    if (Platform.isAndroid && sdkInt >= 33) {
+      // Android 13 이상에서는 개별 미디어 권한 확인
+      final photosStatus = await Permission.photos.status;
+      final videosStatus = await Permission.videos.status;
+      final mediaLibraryStatus = await Permission.mediaLibrary.status;
+      
+      storageGranted = photosStatus.isGranted && 
+                       videosStatus.isGranted && 
+                       mediaLibraryStatus.isGranted;
+    } else {
+      // Android 13 미만이거나 다른 플랫폼
+      final storageStatus = await Permission.storage.status;
+      storageGranted = storageStatus.isGranted;
+    }
         
-    if (cameraStatus.isGranted && storageStatus.isGranted) {
+    if (cameraStatus.isGranted && storageGranted) {
       setState(() {
         _permissionsGranted = true;
       });
@@ -105,6 +118,7 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
           Permission.microphone,
           Permission.photos,
           Permission.videos,
+          Permission.mediaLibrary,  // 미디어 라이브러리 권한 추가
           Permission.location,
         ].request();
       } else {
@@ -120,7 +134,9 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
       // 카메라와 저장소 권한이 모두 허용되었는지 확인
       final bool cameraGranted = statuses[Permission.camera]?.isGranted ?? false;
       final bool storageGranted = sdkInt >= 33
-          ? (statuses[Permission.photos]?.isGranted ?? false)
+          ? (statuses[Permission.photos]?.isGranted ?? false) && 
+            (statuses[Permission.videos]?.isGranted ?? false) && 
+            (statuses[Permission.mediaLibrary]?.isGranted ?? false)
           : (statuses[Permission.storage]?.isGranted ?? false);
           
       return cameraGranted && storageGranted;
