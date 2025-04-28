@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -351,22 +352,43 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             isDense: true,
                           ),
+                          readOnly: true,
                         ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.folder_open),
+                        onPressed: () async {
+                          try {
+                            String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+                            if (selectedDirectory != null) {
+                              setDialogState(() {
+                                _pathController.text = selectedDirectory;
+                              });
+                            }
+                          } catch (e) {
+                            print('폴더 선택 오류: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error selecting folder: $e')),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      TextButton.icon(
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Restore Default'),
-                        onPressed: () async {
-                          final defaultPath = await _getDefaultPhotoPath();
-                          setDialogState(() {
-                            _pathController.text = defaultPath;
-                          });
-                        },
+                      Expanded(
+                        child: TextButton.icon(
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Restore Default'),
+                          onPressed: () async {
+                            final defaultPath = await _getDefaultPhotoPath();
+                            setDialogState(() {
+                              _pathController.text = defaultPath;
+                            });
+                          },
+                        ),
                       ),
                     ],
                   ),

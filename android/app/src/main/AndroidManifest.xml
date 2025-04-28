@@ -10,6 +10,7 @@
     <application
         android:label="ant_camera"
         android:name="${applicationName}"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -38,6 +39,21 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- 알림창 위쪽 바로가기 서비스 등록 -->
+        <service
+            android:name=".AntCameraTileService"
+            android:label="AntCamera"
+            android:icon="@drawable/ic_camera"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="false" />
+        </service>
     </application>
     <!-- File URI scheme permissions for opening files -->
     <queries>
