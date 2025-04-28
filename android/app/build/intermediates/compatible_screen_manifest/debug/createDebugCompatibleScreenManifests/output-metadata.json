@@ -4,7 +4,7 @@
     "type": "COMPATIBLE_SCREEN_MANIFEST",
     "kind": "Directory"
   },
-  "applicationId": "com.ant_revolution.ant_camera",
+  "applicationId": "com.ant_revolution.ant_camera_paid",
   "variantName": "debug",
   "elements": []
 }

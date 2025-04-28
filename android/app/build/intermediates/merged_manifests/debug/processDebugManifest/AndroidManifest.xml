@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ant_revolution.ant_camera"
-    android:versionCode="2"
-    android:versionName="1.0.0" >
+    package="com.ant_revolution.ant_camera_paid"
+    android:versionCode="3"
+    android:versionName="1.1.0" >
 
     <uses-sdk
         android:minSdkVersion="26"
@@ -49,6 +49,11 @@
             <data android:mimeType="text/plain" />
         </intent>
         <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+
+            <data android:mimeType="*/*" />
+        </intent>
+        <intent>
             <action android:name="androidx.camera.extensions.action.VENDOR_ACTION" />
         </intent>
 
@@ -58,10 +63,10 @@
     </queries>
 
     <permission
-        android:name="com.ant_revolution.ant_camera.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:name="com.ant_revolution.ant_camera_paid.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.ant_revolution.ant_camera.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="com.ant_revolution.ant_camera_paid.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <application
         android:name="android.app.Application"
@@ -69,7 +74,9 @@
         android:debuggable="true"
         android:extractNativeLibs="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="ant_camera" >
+        android:label="Ant Camera"
+        android:requestLegacyExternalStorage="true"
+        android:testOnly="true" >
         <activity
             android:name="com.ant_revolution.ant_camera.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -104,6 +111,21 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- 알림창 위쪽 바로가기 서비스 등록 -->
+        <service
+            android:name="com.ant_revolution.ant_camera.AntCameraTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_camera"
+            android:label="AntCamera"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE" >
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="false" />
+        </service>
         <service android:name="io.apparence.camerawesome.buttons.PlayerService" />
 
         <uses-library
@@ -123,14 +145,6 @@
             android:name="io.flutter.plugins.urllauncher.WebViewActivity"
             android:exported="false"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-
-        <uses-library
-            android:name="androidx.window.extensions"
-            android:required="false" />
-        <uses-library
-            android:name="androidx.window.sidecar"
-            android:required="false" />
-
         <activity
             android:name="com.google.android.gms.common.api.GoogleApiActivity"
             android:exported="false"
@@ -142,7 +156,7 @@
 
         <provider
             android:name="androidx.startup.InitializationProvider"
-            android:authorities="com.ant_revolution.ant_camera.androidx-startup"
+            android:authorities="com.ant_revolution.ant_camera_paid.androidx-startup"
             android:exported="false" >
             <meta-data
                 android:name="androidx.lifecycle.ProcessLifecycleInitializer"
@@ -151,6 +165,13 @@
                 android:name="androidx.profileinstaller.ProfileInstallerInitializer"
                 android:value="androidx.startup" />
         </provider>
+
+        <uses-library
+            android:name="androidx.window.extensions"
+            android:required="false" />
+        <uses-library
+            android:name="androidx.window.sidecar"
+            android:required="false" />
 
         <receiver
             android:name="androidx.profileinstaller.ProfileInstallReceiver"

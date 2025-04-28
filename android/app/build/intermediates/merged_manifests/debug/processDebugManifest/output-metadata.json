@@ -4,15 +4,15 @@
     "type": "MERGED_MANIFESTS",
     "kind": "Directory"
   },
-  "applicationId": "com.ant_revolution.ant_camera",
+  "applicationId": "com.ant_revolution.ant_camera_paid",
   "variantName": "debug",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2,
-      "versionName": "1.0.0",
+      "versionCode": 3,
+      "versionName": "1.1.0",
       "outputFile": "AndroidManifest.xml"
     }
   ],

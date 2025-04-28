@@ -1,25 +1,8 @@
 {
     "logs": [
         {
-            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-53:/values-bg/values-bg.xml",
+            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-55:/values-bg/values-bg.xml",
             "map": [
-                {
-                    "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\8cf478dec41eed746328fa8046755ba2\\transformed\\core-1.13.1\\res\\values-bg\\values-bg.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,152,262,364,465,572,677,796",
-                        "endColumns": "96,109,101,100,106,104,118,100",
-                        "endOffsets": "147,257,359,460,567,672,791,892"
-                    },
-                    "to": {
-                        "startLines": "29,30,31,32,33,34,35,63",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "2854,2951,3061,3163,3264,3371,3476,6806",
-                        "endColumns": "96,109,101,100,106,104,118,100",
-                        "endOffsets": "2946,3056,3158,3259,3366,3471,3590,6902"
-                    }
-                },
                 {
                     "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\0098a6e93522fecc805d8900172003dc\\transformed\\preference-1.2.1\\res\\values-bg\\values-bg.xml",
                     "from": {
@@ -86,6 +69,23 @@
                         "startOffsets": "5974,6173,6281,6393",
                         "endColumns": "110,107,111,109",
                         "endOffsets": "6080,6276,6388,6498"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\0a69220afb472c7b014f0ae28962f998\\transformed\\core-1.15.0\\res\\values-bg\\values-bg.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,152,262,364,465,572,677,796",
+                        "endColumns": "96,109,101,100,106,104,118,100",
+                        "endOffsets": "147,257,359,460,567,672,791,892"
+                    },
+                    "to": {
+                        "startLines": "29,30,31,32,33,34,35,63",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "2854,2951,3061,3163,3264,3371,3476,6806",
+                        "endColumns": "96,109,101,100,106,104,118,100",
+                        "endOffsets": "2946,3056,3158,3259,3366,3471,3590,6902"
                     }
                 },
                 {

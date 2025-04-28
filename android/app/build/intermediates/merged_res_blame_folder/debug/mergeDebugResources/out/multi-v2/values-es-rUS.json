@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-53:/values-es-rUS/values-es-rUS.xml",
+            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-55:/values-es-rUS/values-es-rUS.xml",
             "map": [
                 {
                     "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\80d381bf084c21e18706da6716588126\\transformed\\jetified-play-services-base-18.1.0\\res\\values-es-rUS\\values.xml",
@@ -55,7 +55,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\8cf478dec41eed746328fa8046755ba2\\transformed\\core-1.13.1\\res\\values-es-rUS\\values-es-rUS.xml",
+                    "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\0a69220afb472c7b014f0ae28962f998\\transformed\\core-1.15.0\\res\\values-es-rUS\\values-es-rUS.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

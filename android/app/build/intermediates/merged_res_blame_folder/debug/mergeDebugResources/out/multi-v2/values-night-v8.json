@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-53:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-55:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
                     "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\3a4dcd3e8c92efa77cfa193b658940d9\\transformed\\appcompat-1.1.0\\res\\values-night-v8\\values-night-v8.xml",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\sungh\\Documents\\codes\\ant_camera\\android\\app\\src\\main\\res\\values-night\\styles.xml",
+                    "source": "C:\\Users\\sungh\\Documents\\codes\\ant_camera_paid\\android\\app\\src\\main\\res\\values-night\\styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",

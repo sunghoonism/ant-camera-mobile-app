@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-53:/values-ca/values-ca.xml",
+            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-55:/values-ca/values-ca.xml",
             "map": [
                 {
                     "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\3a4dcd3e8c92efa77cfa193b658940d9\\transformed\\appcompat-1.1.0\\res\\values-ca\\values-ca.xml",
@@ -55,6 +55,23 @@
                     }
                 },
                 {
+                    "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\0a69220afb472c7b014f0ae28962f998\\transformed\\core-1.15.0\\res\\values-ca\\values-ca.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,151,253,352,449,555,660,786",
+                        "endColumns": "95,101,98,96,105,104,125,100",
+                        "endOffsets": "146,248,347,444,550,655,781,882"
+                    },
+                    "to": {
+                        "startLines": "29,30,31,32,33,34,35,63",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "2825,2921,3023,3122,3219,3325,3430,6706",
+                        "endColumns": "95,101,98,96,105,104,125,100",
+                        "endOffsets": "2916,3018,3117,3214,3320,3425,3551,6802"
+                    }
+                },
+                {
                     "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\80d381bf084c21e18706da6716588126\\transformed\\jetified-play-services-base-18.1.0\\res\\values-ca\\values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
@@ -69,23 +86,6 @@
                         "startOffsets": "3556,3661,3813,3940,4049,4199,4326,4449,4692,4863,4972,5131,5262,5426,5584,5649,5717",
                         "endColumns": "104,151,126,108,149,126,122,107,170,108,158,130,163,157,64,67,86",
                         "endOffsets": "3656,3808,3935,4044,4194,4321,4444,4552,4858,4967,5126,5257,5421,5579,5644,5712,5799"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\8cf478dec41eed746328fa8046755ba2\\transformed\\core-1.13.1\\res\\values-ca\\values-ca.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,151,253,352,449,555,660,786",
-                        "endColumns": "95,101,98,96,105,104,125,100",
-                        "endOffsets": "146,248,347,444,550,655,781,882"
-                    },
-                    "to": {
-                        "startLines": "29,30,31,32,33,34,35,63",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "2825,2921,3023,3122,3219,3325,3430,6706",
-                        "endColumns": "95,101,98,96,105,104,125,100",
-                        "endOffsets": "2916,3018,3117,3214,3320,3425,3551,6802"
                     }
                 },
                 {

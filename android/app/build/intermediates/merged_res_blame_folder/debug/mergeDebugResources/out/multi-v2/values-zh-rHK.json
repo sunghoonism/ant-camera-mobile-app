@@ -1,8 +1,25 @@
 {
     "logs": [
         {
-            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-53:/values-zh-rHK/values-zh-rHK.xml",
+            "outputFile": "com.ant_revolution.ant_camera.app-mergeDebugResources-55:/values-zh-rHK/values-zh-rHK.xml",
             "map": [
+                {
+                    "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\0a69220afb472c7b014f0ae28962f998\\transformed\\core-1.15.0\\res\\values-zh-rHK\\values-zh-rHK.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,147,246,340,434,527,620,716",
+                        "endColumns": "91,98,93,93,92,92,95,100",
+                        "endOffsets": "142,241,335,429,522,615,711,812"
+                    },
+                    "to": {
+                        "startLines": "29,30,31,32,33,34,35,63",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "2666,2758,2857,2951,3045,3138,3231,5936",
+                        "endColumns": "91,98,93,93,92,92,95,100",
+                        "endOffsets": "2753,2852,2946,3040,3133,3226,3322,6032"
+                    }
+                },
                 {
                     "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\0098a6e93522fecc805d8900172003dc\\transformed\\preference-1.2.1\\res\\values-zh-rHK\\values-zh-rHK.xml",
                     "from": {
@@ -18,23 +35,6 @@
                         "startOffsets": "5153,5302,5669,5739,6037,6205,6284",
                         "endColumns": "65,80,69,118,167,78,75",
                         "endOffsets": "5214,5378,5734,5853,6200,6279,6355"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\sungh\\.gradle\\caches\\8.10.2\\transforms\\8cf478dec41eed746328fa8046755ba2\\transformed\\core-1.13.1\\res\\values-zh-rHK\\values-zh-rHK.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,147,246,340,434,527,620,716",
-                        "endColumns": "91,98,93,93,92,92,95,100",
-                        "endOffsets": "142,241,335,429,522,615,711,812"
-                    },
-                    "to": {
-                        "startLines": "29,30,31,32,33,34,35,63",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "2666,2758,2857,2951,3045,3138,3231,5936",
-                        "endColumns": "91,98,93,93,92,92,95,100",
-                        "endOffsets": "2753,2852,2946,3040,3133,3226,3322,6032"
                     }
                 },
                 {
