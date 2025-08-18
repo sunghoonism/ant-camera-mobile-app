@@ -1,0 +1,2 @@
+        android:label="Ant Camera"
+            android:label="AntCamera"
