@@ -15,7 +15,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ant_revolution.ant_camera"
+    namespace = keystoreProperties["appId"] as String
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
