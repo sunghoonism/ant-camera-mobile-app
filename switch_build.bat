@@ -6,7 +6,7 @@ echo     Build Type Switcher for Ant Camera
 echo ======================================
 echo.
 
-REM 현재 디렉토리 확인
+REM Check current directory
 if not exist "lib\config\build_config.dart" (
     echo Error: build_config.dart file not found!
     echo Please run this script from the project root directory.
@@ -21,7 +21,7 @@ if not exist "pubspec.yaml" (
     exit /b 1
 )
 
-REM build_config.dart에서 buildType 확인
+REM Check buildType in build_config.dart
 echo Checking current build type...
 findstr /c:"buildType = 'paid'" "lib\config\build_config.dart" >nul
 if !errorlevel! equ 0 (
@@ -36,10 +36,10 @@ echo Current build type: !BUILD_TYPE!
 echo Target app name: !NEW_NAME!
 echo.
 
-REM pubspec.yaml의 현재 name 확인
+REM Check current name in pubspec.yaml
 for /f "usebackq delims=" %%a in (`powershell -Command "(Get-Content 'pubspec.yaml' | Select-String '^name:').Line.Split(':')[1].Trim()"`) do set CURRENT_NAME=%%a
 
-REM 목표 label 설정
+REM Set target label
 if "!BUILD_TYPE!" == "paid" (
     set "TARGET_LABEL=Ant Camera(Paid)"
 ) else (
@@ -49,27 +49,22 @@ if "!BUILD_TYPE!" == "paid" (
 echo Current name in pubspec.yaml: !CURRENT_NAME!
 echo Target label will be: "!TARGET_LABEL!"
 
-REM 이미 올바른 name이면 변경하지 않음
-REM 리소스 폴더와 AndroidManifest.xml도 확인하여 업데이트 필요 여부 결정
+REM Check if name already correct
 set NEED_UPDATE=0
 if not "!CURRENT_NAME!" == "!NEW_NAME!" set NEED_UPDATE=1
 
-REM AndroidManifest.xml label은 항상 업데이트 (파싱 복잡성 회피)
-set "CURRENT_LABEL="
-
-REM AndroidManifest.xml은 항상 업데이트
+REM Always update AndroidManifest.xml
 set NEED_UPDATE=1
 
 if !NEED_UPDATE! equ 0 (
     echo All configurations are already correct. No changes needed.
     echo Current name: !CURRENT_NAME!
-    echo Current label: !CURRENT_LABEL!
     echo.
     pause
     exit /b 0
 )
 
-REM 백업 파일들 생성
+REM Create backups
 echo Creating backups...
 copy "pubspec.yaml" "pubspec.yaml.backup" >nul
 if !errorlevel! neq 0 (
@@ -92,7 +87,7 @@ if exist "android\app\key.properties" (
     )
 )
 
-REM 1. AndroidManifest.xml 업데이트 (파일 복사 방식)
+REM 1. Update AndroidManifest.xml
 echo Updating AndroidManifest.xml for !BUILD_TYPE! version...
 
 if "!BUILD_TYPE!" == "paid" (
@@ -119,7 +114,7 @@ if "!BUILD_TYPE!" == "paid" (
     )
 )
 
-REM 2. 리소스 파일 복사
+REM 2. Copy resource files
 echo Copying resource files for !BUILD_TYPE! version...
 if "!BUILD_TYPE!" == "paid" (
     if exist "android\app\src\main\res_paid" (
@@ -147,7 +142,7 @@ if "!BUILD_TYPE!" == "paid" (
     )
 )
 
-REM 3. key.properties appId 업데이트
+REM 3. Update appId in key.properties
 echo Updating appId in key.properties...
 
 if "!BUILD_TYPE!" == "paid" (
@@ -159,7 +154,7 @@ if "!BUILD_TYPE!" == "paid" (
 if exist "android\app\key.properties" (
     echo Updating appId in key.properties...
     
-    REM PowerShell을 사용하여 안전하게 파일 내용 수정
+    REM Use PowerShell to safely modify file content
     powershell -Command ^
         "try { " ^
         "  $content = Get-Content 'android\app\key.properties' -Raw -Encoding UTF8; " ^
@@ -184,7 +179,7 @@ if exist "android\app\key.properties" (
     echo Warning: android\app\key.properties not found. Skipping appId update.
 )
 
-REM 4. pubspec.yaml 업데이트 (마지막에 실행)
+REM 4. Update pubspec.yaml (execute last)
 if not "!CURRENT_NAME!" == "!NEW_NAME!" (
     echo Updating pubspec.yaml with UTF-8 encoding...
     powershell -Command "$content = Get-Content 'pubspec.yaml' -Encoding UTF8; $content[0] = 'name: !NEW_NAME!'; $content | Out-File 'pubspec.yaml' -Encoding UTF8"
@@ -238,4 +233,4 @@ if exist "android\app\key.properties.backup" (
 echo.
 exit /b 1
 
-:end 
+:end
