@@ -157,11 +157,28 @@ if "!BUILD_TYPE!" == "paid" (
 )
 
 if exist "android\app\key.properties" (
-    powershell -Command "$content = Get-Content 'android\app\key.properties' -Encoding UTF8; $content = $content -replace '^appId=.*', 'appId=!NEW_APP_ID!'; $content | Out-File 'android\app\key.properties' -Encoding UTF8"
+    echo Updating appId in key.properties...
+    
+    REM PowerShell을 사용하여 안전하게 파일 내용 수정
+    powershell -Command ^
+        "try { " ^
+        "  $content = Get-Content 'android\app\key.properties' -Raw -Encoding UTF8; " ^
+        "  $newContent = $content -replace 'appId=.*?(\r?\n|$)', 'appId=!NEW_APP_ID!$1'; " ^
+        "  if ($newContent -ne $content) { " ^
+        "    $utf8NoBom = New-Object System.Text.UTF8Encoding($false); " ^
+        "    [System.IO.File]::WriteAllText((Resolve-Path 'android\app\key.properties').Path, $newContent, $utf8NoBom); " ^
+        "  } " ^
+        "  exit 0; " ^
+        "} catch { " ^
+        "  Write-Host 'PowerShell Error:' $_.Exception.Message; " ^
+        "  exit 1; " ^
+        "}"
+    
     if !errorlevel! neq 0 (
         echo Error: Failed to update key.properties!
         goto :restore_backups
     )
+    
     echo key.properties appId updated to: !NEW_APP_ID!
 ) else (
     echo Warning: android\app\key.properties not found. Skipping appId update.
@@ -205,6 +222,7 @@ echo.
 echo ======================================
 echo ERROR: Restoring backups...
 echo ======================================
+
 if exist "pubspec.yaml.backup" (
     move "pubspec.yaml.backup" "pubspec.yaml" >nul
     echo pubspec.yaml restored.

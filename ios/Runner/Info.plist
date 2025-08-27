@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>ant_camera_paid</string>
+	<string>ant_camera</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,13 +45,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>Ant Camera는 사진을 찍고 태그를 지정하기 위해 카메라 접근 권한이 필요합니다.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Ant Camera는 비디오 촬영 시 오디오 녹음을 위해 마이크 접근 권한이 필요합니다.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Ant Camera는 사진을 저장하기 위해 갤러리 접근 권한이 필요합니다.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Ant Camera는 촬영한 사진을 갤러리에 저장하기 위해 권한이 필요합니다.</string>
 </dict>
 </plist>

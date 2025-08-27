@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
+
 
 class CategoryManagement {
   // 카테고리 관리 다이얼로그 표시
@@ -27,7 +27,7 @@ class CategoryManagement {
           builder: (context, setDialogState) {
             return AlertDialog(
               title: const Text('Manage Folder Categories'),
-              content: Container(
+              content: SizedBox(
                 width: double.maxFinite,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -234,6 +234,7 @@ class CategoryManagement {
     String? photoSavePath,
     Future<String> Function() getDefaultPhotoPath,
   ) async {
+    // photoSavePath가 있으면 그것을 사용, 없으면 기본 경로 사용
     final String baseSavePath = photoSavePath ?? await getDefaultPhotoPath();
     
     for (final entry in renamedTags.entries) {

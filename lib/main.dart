@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:file_picker/file_picker.dart';
-import 'paid.dart';
-import 'config/build_config.dart';
+
+
+
+
+import 'settings.dart';
+import 'permissions.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,10 +52,15 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
   
   // 권한 상태
   bool _permissionsGranted = false;
+  
+  // 폴더 선택 중복 실행 방지
+  bool _isSelectingFolder = false;
 
   @override
   void initState() {
     super.initState();
+    print('========== AntCamera 앱 시작 ==========');
+    print('initState 호출됨');
     _loadTags();
     _loadSavePath();
     _loadSelectedTag();
@@ -64,98 +69,10 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
 
   // 권한 확인 및 요청
   Future<void> _checkAndRequestPermissions() async {
-    final cameraStatus = await Permission.camera.status;
-    final androidInfo = Platform.isAndroid ? await DeviceInfoPlugin().androidInfo : null;
-    final sdkInt = androidInfo?.version.sdkInt ?? 0;
-    
-    bool storageGranted = false;
-    
-    if (Platform.isAndroid && sdkInt >= 33) {
-      // Android 13 이상에서는 개별 미디어 권한 확인
-      final photosStatus = await Permission.photos.status;
-      final videosStatus = await Permission.videos.status;
-      final mediaLibraryStatus = await Permission.mediaLibrary.status;
-      
-      storageGranted = photosStatus.isGranted && 
-                       videosStatus.isGranted && 
-                       mediaLibraryStatus.isGranted;
-    } else {
-      // Android 13 미만이거나 다른 플랫폼
-      final storageStatus = await Permission.storage.status;
-      storageGranted = storageStatus.isGranted;
-    }
-        
-    if (cameraStatus.isGranted && storageGranted) {
-      setState(() {
-        _permissionsGranted = true;
-      });
-    } else {
-      final result = await _requestPermissions();
-      setState(() {
-        _permissionsGranted = result;
-      });
-      
-      // 권한이 거부된 경우 알림
-      if (!result && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Camera and storage permissions are required. Please allow permissions in settings.'),
-            duration: Duration(seconds: 5),
-          ),
-        );
-      }
-    }
-  }
-
-  // 필요한 권한 요청
-  Future<bool> _requestPermissions() async {
-    // 안드로이드 13(API 33) 이상
-    if (Platform.isAndroid) {
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      final sdkInt = androidInfo.version.sdkInt;
-      
-      Map<Permission, PermissionStatus> statuses;
-      if (sdkInt >= 33) {
-        statuses = await [
-          Permission.camera,
-          Permission.microphone,
-          Permission.photos,
-          Permission.videos,
-          Permission.mediaLibrary,  // 미디어 라이브러리 권한 추가
-          Permission.location,
-        ].request();
-      } else {
-        // 안드로이드 13 미만
-        statuses = await [
-          Permission.camera,
-          Permission.microphone,
-          Permission.storage,
-          Permission.location,
-        ].request();
-      }
-      
-      // 카메라와 저장소 권한이 모두 허용되었는지 확인
-      final bool cameraGranted = statuses[Permission.camera]?.isGranted ?? false;
-      final bool storageGranted = sdkInt >= 33
-          ? (statuses[Permission.photos]?.isGranted ?? false) && 
-            (statuses[Permission.videos]?.isGranted ?? false) && 
-            (statuses[Permission.mediaLibrary]?.isGranted ?? false)
-          : (statuses[Permission.storage]?.isGranted ?? false);
-          
-      return cameraGranted && storageGranted;
-    } else if (Platform.isIOS) {
-      final statuses = await [
-        Permission.camera,
-        Permission.microphone,
-        Permission.photos,
-        Permission.location,
-      ].request();
-      
-      return (statuses[Permission.camera]?.isGranted ?? false) && 
-             (statuses[Permission.photos]?.isGranted ?? false);
-    }
-    
-    return false;
+    final result = await PermissionManager.checkAndRequestPermissions(context);
+    setState(() {
+      _permissionsGranted = result;
+    });
   }
 
   Future<void> _loadTags() async {
@@ -167,104 +84,25 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
     });
   }
 
-  Future<void> _saveTags() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('tags', tags);
-  }
+
 
   // 저장 경로를 불러오는 함수
   Future<void> _loadSavePath() async {
-    final prefs = await SharedPreferences.getInstance();
-    final customPath = prefs.getString('photoSavePath');
-    final isCustom = prefs.getBool('isCustomPath') ?? false;
-    final saveLocation = prefs.getBool('saveLocationInfo') ?? false;
-    
+    final settings = await SettingsDialog.loadSavePath();
     setState(() {
-      _saveLocationInfo = saveLocation;
+      _photoSavePath = settings['photoSavePath'];
+      _isCustomPath = settings['isCustomPath'];
+      _saveLocationInfo = settings['saveLocationInfo'];
+      _pathController.text = settings['photoSavePath'];
     });
-    
-    if (customPath != null && isCustom) {
-      setState(() {
-        _photoSavePath = customPath;
-        _isCustomPath = true;
-        _pathController.text = customPath;
-      });
-    } else {
-      // 기본 경로 설정 (안드로이드 DCIM/AntCamera)
-      final defaultPath = await _getDefaultPhotoPath();
-      setState(() {
-        _photoSavePath = defaultPath;
-        _isCustomPath = false;
-        _pathController.text = defaultPath;
-      });
-    }
   }
 
   // 기본 사진 저장 경로 가져오기
   Future<String> _getDefaultPhotoPath() async {
-    if (Platform.isAndroid) {
-      final dir = await getExternalStorageDirectory();
-      final basePath = dir?.path.split('Android')[0] ?? '/storage/emulated/0/';
-      final path = '${basePath}DCIM/AntCamera';
-      
-      print('기본 저장 경로 생성: $path');
-      
-      // 디렉토리가 없으면 생성
-      final directory = Directory(path);
-      if (!await directory.exists()) {
-        try {
-          await directory.create(recursive: true);
-          print('저장 디렉토리 생성 성공: $path');
-        } catch (e) {
-          print('저장 디렉토리 생성 실패: $e');
-          
-          // 대체 경로 시도 (Download 폴더)
-          final downloadPath = '${basePath}Download/AntCamera';
-          final downloadDir = Directory(downloadPath);
-          if (!await downloadDir.exists()) {
-            try {
-              await downloadDir.create(recursive: true);
-              print('대체 저장 디렉토리 생성 성공: $downloadPath');
-              return downloadPath;
-            } catch (e) {
-              print('대체 저장 디렉토리 생성 실패: $e');
-            }
-          } else {
-            print('대체 저장 디렉토리 이미 존재: $downloadPath');
-            return downloadPath;
-          }
-        }
-      } else {
-        print('저장 디렉토리 이미 존재: $path');
-      }
-      
-      return path;
-    } else {
-      // iOS 또는 다른 플랫폼
-      final dir = await getApplicationDocumentsDirectory();
-      final path = '${dir.path}/AntCamera';
-      
-      // 디렉토리가 없으면 생성
-      final directory = Directory(path);
-      if (!await directory.exists()) {
-        await directory.create(recursive: true);
-      }
-      
-      return path;
-    }
+    return await SettingsDialog.getDefaultPhotoPath();
   }
 
-  // 저장 경로를 SharedPreferences에 저장
-  Future<void> _saveSavePath(String path, bool isCustom) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('photoSavePath', path);
-    await prefs.setBool('isCustomPath', isCustom);
-    
-    setState(() {
-      _photoSavePath = path;
-      _isCustomPath = isCustom;
-    });
-  }
+
 
   // 선택된 태그 불러오기
   Future<void> _loadSelectedTag() async {
@@ -290,200 +128,42 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
     super.dispose();
   }
 
-  void _addNewTag() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add New Tag'),
-          content: TextField(
-            controller: _tagController,
-            decoration: const InputDecoration(hintText: 'Enter new tag name'),
-            autofocus: true,
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.pop(context);
-                _tagController.clear();
-              },
-            ),
-            TextButton(
-              child: const Text('Add'),
-              onPressed: () {
-                if (_tagController.text.isNotEmpty) {
-                  setState(() {
-                    tags.add(_tagController.text);
-                  });
-                  _saveTags();
-                  Navigator.pop(context);
-                  _tagController.clear();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   // 설정 다이얼로그 표시
   void _showSettingsDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Settings'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Photo Save Location:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _pathController,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter save path',
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            isDense: true,
-                          ),
-                          readOnly: true,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.folder_open),
-                        onPressed: () async {
-                          try {
-                            String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-                            if (selectedDirectory != null) {
-                              setDialogState(() {
-                                _pathController.text = selectedDirectory;
-                              });
-                            }
-                          } catch (e) {
-                            print('폴더 선택 오류: $e');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error selecting folder: $e')),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: TextButton.icon(
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('Restore Default'),
-                          onPressed: () async {
-                            final defaultPath = await _getDefaultPhotoPath();
-                            setDialogState(() {
-                              _pathController.text = defaultPath;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      TextButton.icon(
-                        icon: Icon(
-                          Icons.folder,
-                          color: BuildConfig.isCategoryManagementEnabled 
-                              ? null 
-                              : Colors.grey,
-                        ),
-                        label: Text(
-                          'Add and Manage Folder Categories',
-                          style: TextStyle(
-                            color: BuildConfig.isCategoryManagementEnabled 
-                                ? null 
-                                : Colors.grey,
-                          ),
-                        ),
-                        onPressed: () async {
-                          if (BuildConfig.isCategoryManagementEnabled) {
-                            // 유료 버전: 카테고리 관리 대화상자 표시
-                            CategoryManagement.showCategoryManagementDialog(
-                              context,
-                              tags,
-                              selectedTag,
-                              _photoSavePath,
-                              (newTags) {
-                                setState(() {
-                                  tags = newTags;
-                                });
-                              },
-                              (newSelectedTag) {
-                                setState(() {
-                                  selectedTag = newSelectedTag;
-                                });
-                              },
-                              _getDefaultPhotoPath,
-                            );
-                          } else {
-                            // 무료 버전: 유료 버전 안내 메시지 표시
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Folder category management is available in the paid version.'),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _loadSavePath(); // Reload saved settings
-                  },
-                ),
-                TextButton(
-                  child: const Text('Save'),
-                  onPressed: () async {
-                    if (_pathController.text.isNotEmpty) {
-                      final directory = Directory(_pathController.text);
-                      // Create directory if it doesn't exist
-                      if (!await directory.exists()) {
-                        await directory.create(recursive: true);
-                      }
-                      
-                      // Update save path
-                      await _saveSavePath(_pathController.text, true);
-                      
-                      // Update location info save setting
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setBool('saveLocationInfo', _saveLocationInfo);
-                      
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Settings have been updated.'), duration: Duration(seconds: 2)),
-                        );
-                        Navigator.pop(context);
-                      }
-                    }
-                  },
-                ),
-              ],
-            );
-          }
-        );
+    SettingsDialog.showSettingsDialog(
+      context,
+      pathController: _pathController,
+      saveLocationInfo: _saveLocationInfo,
+      isSelectingFolder: _isSelectingFolder,
+      onSelectingFolderChanged: (value) {
+        setState(() {
+          _isSelectingFolder = value;
+        });
+      },
+      onSaveLocationInfoChanged: (value) {
+        setState(() {
+          _saveLocationInfo = value;
+        });
+      },
+      onPathChanged: (path, isCustom) {
+        setState(() {
+          _photoSavePath = path;
+          _isCustomPath = isCustom;
+          _pathController.text = path;
+        });
+      },
+      tags: tags,
+      selectedTag: selectedTag,
+      photoSavePath: _photoSavePath,
+      onTagsChanged: (newTags) {
+        setState(() {
+          tags = newTags;
+        });
+      },
+      onSelectedTagChanged: (newSelectedTag) {
+        setState(() {
+          selectedTag = newSelectedTag;
+        });
       },
     );
   }
@@ -521,7 +201,18 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                       ),
                       saveConfig: SaveConfig.photo(
                         pathBuilder: (sensors) async {
-                          final String baseSavePath = _photoSavePath ?? await _getDefaultPhotoPath();
+                          // 사용자가 설정한 경로가 있으면 그것을 사용, 없으면 기본 경로 사용
+                          String baseSavePath;
+                          if (_isCustomPath && _photoSavePath != null) {
+                            // 사용자가 직접 설정한 경로를 그대로 사용
+                            baseSavePath = _photoSavePath!;
+                            print('커스텀 경로 사용: $baseSavePath');
+                          } else {
+                            // 기본 경로 사용
+                            baseSavePath = await _getDefaultPhotoPath();
+                            print('기본 경로 사용: $baseSavePath');
+                          }
+                          
                           String tagFolderPath = baseSavePath;
                           
                           // 태그에 따른 폴더 경로 생성 (선택안함도 별도 폴더로 처리)
@@ -716,7 +407,7 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                         padding: EdgeInsets.zero, // 패딩 제거
                         children: [
                           // 모든 태그 버튼 생성
-                          ...tags.map((tag) => _buildTagButton(tag)).toList(),
+                          ...tags.map((tag) => _buildTagButton(tag)),
                         ],
                       ),
                     ),
@@ -730,7 +421,10 @@ class _AntCameraScreenState extends State<AntCameraScreen> {
                         icon: const Icon(Icons.settings, color: Colors.white, size: 18), // 아이콘 크기 줄임
                         padding: const EdgeInsets.all(4), // 패딩 줄임
                         constraints: const BoxConstraints(), // 제약 조건 제거
-                        onPressed: _showSettingsDialog,
+                        onPressed: () {
+                          print('설정 버튼 클릭됨');
+                          _showSettingsDialog();
+                        },
                       ),
                     ),
                   ],

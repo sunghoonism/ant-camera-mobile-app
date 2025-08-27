@@ -15,9 +15,9 @@ plugins {
 }
 
 android {
-    namespace = "com.ant_revolution.ant_camera"
-    compileSdk = 35
-    ndkVersion = "27.0.12077973"
+    namespace = "com.example.ant_camera"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -33,7 +33,7 @@ android {
         applicationId = keystoreProperties["appId"] as String
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 26
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
